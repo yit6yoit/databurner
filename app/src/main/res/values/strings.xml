@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Data Burner</string>
+    <string name="title">Data Burner</string>
+    <string name="subtitle">Streams from public speed-test servers over parallel connections and discards the data.</string>
+    <string name="speed_unit">Mbps</string>
+    <string name="total_downloaded">Total downloaded</string>
+    <string name="active_connections">Active connections</string>
+    <string name="all_time_used">All-time used (persists)</string>
+    <string name="reset_hint">long-press to reset</string>
+    <string name="lifetime_reset_done">All-time total reset</string>
+    <string name="elapsed">Elapsed</string>
+    <string name="connections_label">Connections: %1$d</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="status_idle">Idle</string>
+    <string name="status_running">Running — downloading at full speed</string>
+</resources>
