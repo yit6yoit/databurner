@@ -22,14 +22,23 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      # ubuntu-latest ships with the Android SDK preinstalled (ANDROID_HOME set).
-      # Just make sure the exact platform + build-tools this app needs exist and
-      # the licenses are accepted — no third-party setup action required.
+      # ubuntu-latest ships with the Android SDK preinstalled (ANDROID_HOME set),
+      # usually already including platform-34 + build-tools. sdkmanager isn't on
+      # PATH, so call it by full path. Non-fatal: the build step is the real test.
       - name: Ensure Android SDK packages
+        continue-on-error: true
         run: |
           echo "ANDROID_HOME=$ANDROID_HOME  ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          SDK="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          SM="$SDK/cmdline-tools/latest/bin/sdkmanager"
+          [ -x "$SM" ] || SM="$(ls "$SDK"/cmdline-tools/*/bin/sdkmanager 2>/dev/null | head -1)"
+          echo "sdkmanager: $SM"
+          if [ -x "$SM" ]; then
+            yes | "$SM" --licenses > /dev/null 2>&1 || true
+            "$SM" "platforms;android-34" "build-tools;34.0.0" || true
+          fi
+          echo "Platforms:";   ls "$SDK/platforms"   2>/dev/null || true
+          echo "Build-tools:"; ls "$SDK/build-tools" 2>/dev/null || true
 
       - name: Build debug APK
         run: |
