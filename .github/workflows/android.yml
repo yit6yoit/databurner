@@ -1,8 +1,8 @@
 name: Build APK
 
-# Lets you build the APK entirely in the cloud — no PC needed.
-# Push the project to GitHub (or tap "Run workflow"), then download the APK
-# from the run's Artifacts section on your phone.
+# Builds the APK entirely in the cloud — no PC needed.
+# Push the project (or tap "Run workflow"), then download the APK from the
+# run's Artifacts section on your phone.
 
 on:
   push:
@@ -22,13 +22,19 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # ubuntu-latest ships with the Android SDK preinstalled (ANDROID_HOME set).
+      # Just make sure the exact platform + build-tools this app needs exist and
+      # the licenses are accepted — no third-party setup action required.
+      - name: Ensure Android SDK packages
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME  ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Build debug APK
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
